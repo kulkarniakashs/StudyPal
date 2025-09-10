@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Chatbot",
-  description: "with Gemini",
+  title: "StudyPal",
+  description: "Your personal AI study companion"
 };
 
 export default function RootLayout({

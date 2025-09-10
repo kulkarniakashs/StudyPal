@@ -6,8 +6,6 @@ import ChatModel from "@/lib/models/Chat";
 import { role, Chat } from "@/lib/types";
 import { connectDB } from "@/lib/mongodb";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API });
-
 export async function POST(req: Request) {
     await connectDB();
     const session = await getServerSession(authOptions)

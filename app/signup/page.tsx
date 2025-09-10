@@ -64,7 +64,7 @@ export default function Signup() {
             placeholder="Name"
             value={form.name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 placeholder-gray-500"
+            className="w-full text-black px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 placeholder-gray-500"
             required
           />
           <input
@@ -73,7 +73,7 @@ export default function Signup() {
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 placeholder-gray-500"
+            className="w-full px-4 text-black py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 placeholder-gray-500"
             required
           />
           <input
@@ -82,7 +82,7 @@ export default function Signup() {
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 placeholder-gray-500"
+            className="w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 placeholder-gray-500"
             required
           />
           <input
@@ -91,7 +91,7 @@ export default function Signup() {
             placeholder="Confirm Password"
             value={form.confirmPassword}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 placeholder-gray-500"
+            className="w-full px-4 py-2 border text-black rounded-lg focus:outline-none focus:ring focus:ring-blue-300 placeholder-gray-500"
             required
           />
           <button
@@ -109,7 +109,7 @@ export default function Signup() {
             placeholder="Enter OTP"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 placeholder-gray-500"
+            className="w-full px-4 py-2 text-black border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 placeholder-gray-500"
             required
           />
           <button

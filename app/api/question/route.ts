@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import ChatModel from "@/lib/models/Chat";
-import { message, role } from "@/lib/types";
+import {  role } from "@/lib/types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API });
 export async function POST(req: Request) {

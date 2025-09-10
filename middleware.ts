@@ -5,3 +5,8 @@ export default withAuth({
     signIn: '/signin',
   },
 });
+
+export const config = {
+  matcher : ['/chat/:path', '/share/:path']
+}
+

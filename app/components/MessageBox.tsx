@@ -27,9 +27,9 @@ const MessageBox = memo(function MessageBox() {
     }
   }, [message]);
 
-  useEffect(() => {
-    console.log("message box rerendred");
-  })
+  // useEffect(() => {
+  //   console.log("message box rerendred");
+  // })
 
   const ask_question = async (question: string, chatid: string) => {
     const res = await fetch("/api/question", {

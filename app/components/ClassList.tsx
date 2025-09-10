@@ -23,7 +23,7 @@ export default function Sidebar() {
 
   const fetchChatListsFromApi = async () => {
     let res = await axios.get("/api/get-chat-list");
-    console.log(res)
+    // console.log(res)
     dispatch(fetchChatList(res.data.chatList));
   }
 

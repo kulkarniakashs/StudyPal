@@ -4,7 +4,7 @@ class OTPStore {
   // Set OTP
   set(email: string, otp: string) {
     this.store[email] = otp;
-    console.log(this.store);
+    // console.log(this.store);
   }
 
   // Get OTP

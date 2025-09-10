@@ -18,14 +18,14 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 text=black bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg w-96 p-6">
-        <h2 className="text-lg font-semibold mb-4">{title}</h2>
-        <p className="mb-6">{message}</p>
+        <h2 className="text-lg font-semibold mb-4 text-blue-600">{title}</h2>
+        <p className="mb-6 text-black">{message}</p>
         <div className="flex justify-end space-x-4">
           <button
             onClick={onCancel}
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            className="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-700"
           >
             Cancel
           </button>

@@ -29,7 +29,7 @@ export async function POST(req: Request) {
             messages : chatDetailsArray[0].messages,
             title : chatDetailsArray[0].title
         }
-        console.log(chatDetail);
+        // console.log(chatDetail);
         return NextResponse.json({ chatDetail }, { status: 200 })
     }
     return NextResponse.json(
