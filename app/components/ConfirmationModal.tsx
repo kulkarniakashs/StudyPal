@@ -1,3 +1,4 @@
+import { action } from "@/lib/types";
 import { memo } from "react";
  type ConfirmationModalProps = {
   isOpen: boolean;
@@ -5,7 +6,6 @@ import { memo } from "react";
   message?: string;
   onConfirm: () => void;
   onCancel: () => void;
-  chatid : string
 };
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -19,9 +19,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   return (
     <div className="fixed inset-0 text=black bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-96 p-6">
+      <div className="bg-white rounded-lg shadow-lg w-96 py-10 px-5 min-w-[40%]">
         <h2 className="text-lg font-semibold mb-4 text-blue-600">{title}</h2>
-        <p className="mb-6 text-black">{message}</p>
+        <p className="mb-6 text-black text-wrap">{message}</p>
         <div className="flex justify-end space-x-4">
           <button
             onClick={onCancel}

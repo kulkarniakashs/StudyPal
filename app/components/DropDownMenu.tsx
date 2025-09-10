@@ -36,12 +36,10 @@ const DropdownMenu: React.FC = () => {
           }
           break;
         case action.share:
-          if(b){
-            await navigator.clipboard.writeText(`${window.location.hostname}:3000/share/${chatid}`)
-          }
-          else{
+          if(!b){
             alert("couldn't share");
           }
+          break;
         default: 
           break;
       }
@@ -66,19 +64,20 @@ const DropdownMenu: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleOptionClick = useCallback((option: DropdownOption) => {
+  const handleOptionClick = useCallback(async(option: DropdownOption) => {
     setSelectedOption(option);
     setIsModalOpen(true);
     setIsDropdownOpen(false);
   },[]);
 
   const handleConfirm = useCallback(() => {
+    if(selectedOption?.value == action.share) navigator.clipboard.writeText(`${window.location.hostname}/share/${chatid}`);
     if (selectedOption) {
       onOptionConfirm(selectedOption);
     }
     setIsModalOpen(false);
     setSelectedOption(null);
-  },[onOptionConfirm, selectedOption]);
+  },[onOptionConfirm, selectedOption,chatid]);
 
   const handleCancel = useCallback(() => {
     setIsModalOpen(false);
@@ -113,11 +112,10 @@ const DropdownMenu: React.FC = () => {
 
       {selectedOption && <ConfirmationModal
         isOpen={isModalOpen}
-        title={`${selectedOption.value == action.delete ? "Are you sure ?" : "Share and Copy link"}`}
+        title={`${selectedOption.value == action.delete ? "Are you sure ?" : "Create a link"}`}
         message={`${selectedOption.value == action.delete ? "Chat will be deleted Permantly" : `${window.location.hostname}/share/${chatid}`}`}
         onConfirm={handleConfirm}
         onCancel={handleCancel}
-        chatid = {chatid}
       />}
     </div>
   );

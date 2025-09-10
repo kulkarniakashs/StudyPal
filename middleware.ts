@@ -7,6 +7,5 @@ export default withAuth({
 });
 
 export const config = {
-  matcher : ['/chat/:path', '/share/:path']
+  matcher : ['/chat','/chat/:chatid']
 }
-

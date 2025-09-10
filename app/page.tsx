@@ -1,12 +1,8 @@
-// pages/index.tsx
-import DropdownMenu from "./components/DropDownMenu";
+import { redirect } from "next/navigation"
 
-const HomePage: React.FC = () => {
+export default function Page(){
+  redirect('/chat')
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <DropdownMenu/>
-    </div>
-  );
-};
-
-export default HomePage;
+    <div></div>
+  )
+}
