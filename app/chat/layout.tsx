@@ -12,10 +12,10 @@ export default function RootLayout({
         console.log("sidebar layout")
     })
   return (
-    <div className="flex flex-row">
-        <Sidebar/>
+    <div className="flex flex-row max-w-screen">
+        <div className="w-[20%]"><Sidebar/></div>
         {/* {children} */}
-        <ChatInterface/>
+        <div className="flex-1"><ChatInterface/></div>
     </div>
   );
 }

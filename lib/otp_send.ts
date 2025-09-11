@@ -1,20 +1,37 @@
 import nodemailer from "nodemailer"
 import { otpStore } from "./otp-store";
 const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
-    },
+  port : 465,
+  host : "smtp.gmail.com",
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+  secure : true
 });
-export async function otp_send(email : string){
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    otpStore.set(email, otp);
-    await transporter.sendMail({
-        from: `"StudyPal" <${process.env.GMAIL_USER}>`,
-        to: email,
-        subject: "Your StudyPal OTP Code",
-        html: `
+export async function otp_send(email: string) {
+  await new Promise((resolve, reject) => {
+    // verify connection configuration
+    transporter.verify(function (error, success) {
+      if (error) {
+        console.log(error);
+        reject(error);
+      } else {
+        console.log("Server is ready to take our messages");
+        resolve(success);
+      }
+    });
+  });
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  otpStore.set(email, otp);
+
+  await new Promise((resolve, reject) => {
+    transporter.sendMail({
+      from: `"StudyPal" <${process.env.GMAIL_USER}>`,
+      to: email,
+      subject: "Your StudyPal OTP Code",
+      html: `
   <div style="font-family: 'Helvetica', Arial, sans-serif; background-color: #f4f6fb; padding: 30px;">
     <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden;">
       
@@ -43,6 +60,14 @@ export async function otp_send(email : string){
     </div>
   </div>
   `
+    }, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        console.log(info);
+        resolve(info);
+      }
     });
-
+  })
 }

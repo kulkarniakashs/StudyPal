@@ -32,7 +32,7 @@ export default function Sidebar() {
   }, [])
 
   return (
-    <div className="w-[25%] h-screen bg-gray-900 text-white flex flex-col p-4">
+    <div className="h-screen bg-gray-900 text-white flex flex-col p-4">
       {/* New Chat Button */}
       <button
         onClick={handleNewChat}

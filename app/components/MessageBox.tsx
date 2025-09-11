@@ -60,8 +60,8 @@ const MessageBox = memo(function MessageBox() {
       const chatid = Array.isArray(param.chatid) ? param.chatid[0] : param.chatid;
       setLoading(true);
       dispatch(addMessage({groupid : chatid, message : {content : message , role : role.user}}));
-      await ask_question(message, chatid);
       setMessage("");
+      await ask_question(message, chatid);
       setLoading(false);
     }
     else {
