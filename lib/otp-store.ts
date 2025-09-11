@@ -8,7 +8,7 @@ class OTPStore {
   }
 
   // Get OTP
-  get(email: string): string | undefined {
+  get(email: string): string {
     return this.store[email];
   }
 

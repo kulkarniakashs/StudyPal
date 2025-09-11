@@ -50,7 +50,7 @@ export async function otp_send(email: string) {
         
         <p style="font-size: 14px; color: #999999;">This OTP is valid for the next 10 minutes.</p>
         
-        <a href="#" style="display: inline-block; margin-top: 20px; padding: 12px 25px; background-color: #6a11cb; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to StudyPal</a>
+        <a href="studypal-akash.vercel.app/chat" style="display: inline-block; margin-top: 20px; padding: 12px 25px; background-color: #6a11cb; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Go to StudyPal</a>
       </div>
       
       <div style="background-color: #f4f6fb; text-align: center; padding: 15px; font-size: 12px; color: #999999;">
