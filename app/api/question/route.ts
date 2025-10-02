@@ -10,8 +10,11 @@ import { authOptions } from "../auth/[...nextauth]/route";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API });
 export async function POST(req: Request) {
     const session = await getServerSession(authOptions)
+    if (!session) return;
     const que_obj = await req.json() as request;
+    console.log(que_obj);
     let response = "";
+    let title: string | undefined
     let history: { role: string, parts: { text: string }[] }[] = []
     let chat_id = "";
     if (que_obj.request_type == request_type.question) {
@@ -20,7 +23,7 @@ export async function POST(req: Request) {
         let messagess = await ChatModel.find({ _id: que_obj.chatid }).select("messages").lean();
         let messages = messagess[0].messages;
         messages.reverse();
-        console.log("m", messages[0])
+        // console.log("m", messages[0])
         if (messages.length > 0) {
             for (let i = 0; i <= messages.length - 1; i++) {
                 history.push({
@@ -38,8 +41,9 @@ export async function POST(req: Request) {
     const stream = new ReadableStream({
         async start(controller) {
             if (que_obj.request_type == request_type.new_chat) {
-                controller.enqueue(new TextEncoder().encode(JSON.stringify({ response_type: response_type.chat_id, chat_id: chat_id } as response) + '\n'))
+                controller.enqueue(new TextEncoder().encode(JSON.stringify({ response_type: response_type.chat_id, chat_id: chat_id } as response)))
             }
+            // console.log(history);
             const ask_question = new Promise<void>(async (resolve, reject) => {
                 const chat = ai.chats.create({
                     model: "gemini-2.5-flash",
@@ -72,16 +76,13 @@ Do not include any explanatory text outside of Markdown. The output must be read
                 } catch (err) {
                     console.error("Stream error:", err);
                 }
-                await ChatModel.updateOne({ _id: chat_id }, { "$push": { messages: [{ content: que_obj.question, role: role.user }, { content: response, role: role.bot }] }, updatedAt: (new Date).toISOString() }, { upsert: true })
                 resolve();
             })
 
             const generate_title = new Promise<void>(async (resolve, reject) => {
-                if (que_obj.request_type == request_type.question) resolve();
-
                 const response = await ai.models.generateContent({
                     model: "gemini-2.5-flash",
-                    contents: `Generate a concise chat title (4–5 words only) that summarizes the following question:
+                    contents: `Generate a concise chat title (4 to 5 words only) that summarizes the following question:
 
 Question: ${que_obj.question}
 
@@ -92,29 +93,32 @@ Rules:
 - Avoid generic words like "chat" or "question".
 - Only output the title, nothing else.`,
                 });
-                let title: string | undefined = response.candidates?.[0]?.content?.parts?.[0]?.text;
+                title = response.candidates?.[0]?.content?.parts?.[0]?.text;
                 if (title) {
                     console.log(title);
-                    controller.enqueue(new TextEncoder().encode(JSON.stringify({ response_type: response_type.chat_title, chat_title: title } as response)));
-                    let ch = new ChatModel({
-                        _id : chat_id,
-                        user: session?.user.id || "",
-                        updatedAt: Date.now(),
-                        title: title,
-                        messages: [
-                        ]
-                    })
-                    try {
-                        await ch.save();
-                    }catch(e){
-                        console.log(e);
-                    }
+                    controller.enqueue(new TextEncoder().encode(JSON.stringify({ response_type: response_type.chat_title, chat_title: title } as response) + '\n'));
                 }
                 resolve();
             })
-
-            await Promise.all([generate_title, ask_question]);
-            await ChatModel.updateOne({ _id: chat_id }, { "$push": { messages: [{ content: que_obj.question, role: role.user }, { content: response, role: role.bot }] }, updatedAt: (new Date).toISOString() }, { upsert: true })
+            if(que_obj.request_type == request_type.new_chat) {
+                await Promise.all([generate_title, ask_question]);
+            }
+            else await ask_question
+            try {
+                if(request_type.new_chat == que_obj.request_type){let ch = new ChatModel({
+                    _id: chat_id,
+                    user: session?.user.id || "",
+                    updatedAt: Date.now(),
+                    title: title,
+                    messages: [{ content: que_obj.question, role: role.user }, { content: response, role: role.bot }]                  
+                })
+                await ch.save();}
+                else {
+                    await ChatModel.updateOne({ _id: chat_id }, { "$push": { messages: [{ content: que_obj.question, role: role.user }, { content: response, role: role.bot }] }, updatedAt: (new Date).toISOString() }, { upsert: true })
+                }
+            } catch (e) {
+                console.log(e);
+            }
             controller.close();
         },
     });

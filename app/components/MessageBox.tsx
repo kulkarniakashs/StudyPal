@@ -4,9 +4,9 @@ import { FiSend } from "react-icons/fi";
 import { useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { memo } from "react";
-import { addChat, addMessage, streamMessage } from "@/lib/store/chat";
-import { Chat, chatDetails, role } from "@/lib/types";
-import { addChatEntry } from "@/lib/store/chatList";
+import { addChat, addMessage, renameChat, streamMessage } from "@/lib/store/chat";
+import { Chat, chatDetails, message, request, request_type, response, response_type, role } from "@/lib/types";
+import { addChatEntry, renameChatinList } from "@/lib/store/chatList";
 import { useRouter } from "next/navigation";
 
 const MessageBox = memo(function MessageBox() {
@@ -31,59 +31,56 @@ const MessageBox = memo(function MessageBox() {
   //   console.log("message box rerendred");
   // })
 
-  const ask_question = async (question: string, chatid: string) => {
+  const ask_question = async (request: request) => {
+    console.log("request, ", request)
     const res = await fetch("/api/question", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: question, chatid: chatid }),
+      body: JSON.stringify(request),
     });
     if (!res.body) return;
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
 
     let done = false;
-    
+    let chatid = "";
+    if (request.request_type == request_type.question) chatid = request.chatid;
     while (!done) {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       if (value) {
         const chunk = decoder.decode(value);
-        const message = chunk.replace(/^data: /, "").trim();
-        console.log(message);
-        dispatch(streamMessage({ groupid: chatid, message: message}));
+        const ans_obj: response = JSON.parse(chunk);
+        console.log(ans_obj);
+        if (ans_obj.response_type == response_type.chat_id) {
+          chatid = ans_obj.chat_id;
+          let m : message[] = [{content : request.question , role : role.user}];
+          dispatch(addChat({createdAt : (new Date()).toISOString(), id : chatid , title : "New Chat", messages : m, updatedAt : new Date().toISOString()}));
+          dispatch(addChatEntry({id : chatid , title : "New Chat", updatedAt : (new Date()).toISOString()}));
+          router.replace(`/chat/${chatid}`);
+        }
+        else if (ans_obj.response_type === response_type.content) { dispatch(streamMessage({ groupid: chatid, message: ans_obj.content })); }
+        else if (ans_obj.response_type === response_type.chat_title) {
+          dispatch(renameChatinList({ chatid, newtitle: ans_obj.chat_title }));
+          dispatch(renameChat({ chatid, newtitle: ans_obj.chat_title }));
+        }
       }
     }
   }
 
   const handleSend = async () => {
+    setLoading(true);
     if (param.chatid) {
       const chatid = Array.isArray(param.chatid) ? param.chatid[0] : param.chatid;
-      setLoading(true);
-      dispatch(addMessage({groupid : chatid, message : {content : message , role : role.user}}));
+      dispatch(addMessage({ groupid: chatid, message: { content: message, role: role.user } }));
       setMessage("");
-      await ask_question(message, chatid);
-      setLoading(false);
+      await ask_question({request_type : request_type.question,question : message, chatid : chatid });
     }
     else {
-      setLoading(true);
-      let res = await fetch('/api/new-chat', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ question: message })
-      });
-      const data = await res.json();
-      let chatDetail = data.chat as Chat;
-      chatDetail.messages = [{role : role.user, content : message}]
-      dispatch(addChat(chatDetail));
-      dispatch(addChatEntry(chatDetail as chatDetails))
-      router.replace(`/chat/${chatDetail.id}`);
-      setMessage("")
-      console.log("after rerendering");
-      await ask_question(message, chatDetail.id);
-      setLoading(false);
+      setMessage("");
+      await ask_question({request_type : request_type.new_chat, question : message});
     }
+    setLoading(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -94,7 +91,7 @@ const MessageBox = memo(function MessageBox() {
   };
 
   return (
-    <div className={`w-full items-center flex justify-center ${param.chatid ? "": "h-full"}`}>
+    <div className={`w-full items-center flex justify-center ${param.chatid ? "" : "h-full"}`}>
       <div className="w-full max-w-2xl p-4">
         <div className="bg-gray-800 rounded-2xl p-3 flex items-end">
           <textarea

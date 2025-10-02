@@ -10,6 +10,7 @@ import { rename } from "@/lib/actions";
 import  {useDispatch } from "react-redux";
 import { renameChatinList } from "@/lib/store/chatList";
 import { renameChat } from "@/lib/store/chat";
+import TypingTitle from "./TypingTitle";
 export default memo(function GroupTitle() {
     const data1 = useSelector((state: RootState) => state.Chat.detail);
     const params = useParams()
@@ -38,9 +39,9 @@ export default memo(function GroupTitle() {
                                     setdata({title : e.target.value, updatedAt : data.updatedAt});
                                 }}
                                 className="text-2xl w-fit flex items-center"
-                            /> :
-                                <h1 className="text-white text-2xl font-bold">{data.title}</h1>
-                            }
+                            /> : <TypingTitle title={data.title} />
+                        }
+                        {/* // <h1 className="text-white text-2xl font-bold">{data.title}</h1> */}
                             <div onClick={() => {
                                 if(!update){
                                     if(ref)ref.current?.focus();
