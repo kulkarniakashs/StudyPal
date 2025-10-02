@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StudyPal
+
+StudyPal is an AI-powered study companion built with Next.js, React, Redux Toolkit, MongoDB, and Google Gemini. It provides chat-based Q&A, user authentication, OTP verification, chat history, and sharing features.
+
+## Features
+
+- **AI Chat**: Ask questions and get Markdown-formatted answers from Gemini.
+- **Authentication**: Secure login/signup with NextAuth.
+- **OTP Verification**: Email-based OTP for signup.
+- **Chat History**: View, rename, delete, and share chats.
+- **Shareable Links**: Share chats via generated links.
+- **Redux State Management**: For chat and user state.
+- **Tailwind CSS**: For UI styling.
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```sh
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy the example environment file and fill in your secrets:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```sh
+cp .env.example .env.local
+```
+
+Edit `.env.local` and provide the following variables:
+
+```
+GEMINI_API=your_google_gemini_api_key
+MONGODB=your_mongodb_connection_string
+GMAIL_USER=your_gmail_address
+GMAIL_PASS=your_gmail_app_password
+```
+
+- `GEMINI_API`: Google Gemini API key for AI responses.
+- `MONGODB`: MongoDB connection string.
+- `GMAIL_USER`/`GMAIL_PASS`: Gmail credentials for OTP email sending.
+
+### 3. Run the development server
+
+```sh
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Project Structure
+
+- `app/` - Next.js app directory (pages, components, API routes)
+- `lib/` - Utility functions, Redux store, database models, OTP logic
+- `public/` - Static assets
+- `.envexample` - Example environment variables
+- `.env.local` - Your environment variables (not committed)
+
+## Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+
+## Technologies Used
+
+- Next.js 15
+- React 19
+- Redux Toolkit
+- MongoDB & Mongoose
+- Google Gemini API
+- NextAuth.js
+- Tailwind CSS
+- Nodemailer (for OTP)
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Redux Toolkit](https://redux-toolkit.js.org/)
+- [NextAuth.js](https://next-auth.js.org/)
+- [Google Gemini](https://ai.google.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
