@@ -23,8 +23,7 @@ export async function POST(req: Request) {
         let messagess = await ChatModel.find({ _id: que_obj.chatid }).select("messages").lean();
         let messages = messagess[0].messages;
         console.log("msg", messages);
-        messages.reverse();
-        // console.log("m", messages[0])
+        messages = messages.slice(-6);
         if (messages.length > 0) {
             for (let i = 0; i <= messages.length - 1; i++) {
                 history.push({
@@ -52,11 +51,11 @@ export async function POST(req: Request) {
             if (que_obj.request_type == request_type.new_chat) {
                 safeEnqueue(JSON.stringify({ response_type: response_type.chat_id, chat_id: chat_id } as response))
             }
-            // console.log(history);
+            console.log(history);
             const ask_question = new Promise<void>(async (resolve, reject) => {
                 const chat = ai.chats.create({
                     model: "gemini-2.5-flash",
-                    history: history.reverse(),
+                    history: history,
                     config: {
                         systemInstruction: `You are an expert assistant specialized in providing clear, structured answers in Markdown format. For every user question, respond only in Markdown. Use appropriate formatting such as:
 
