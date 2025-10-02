@@ -1,6 +1,6 @@
 export enum role {
-    user,
-    bot
+  user,
+  bot
 }
 
 export enum action {
@@ -9,28 +9,28 @@ export enum action {
 }
 
 export type chatDetails = {
-    title : string,
-    id : string,
-    updatedAt : string
+  title: string,
+  id: string,
+  updatedAt: string
 }
 
 export type chatList = chatDetails[];
 
 export type message = {
-  role : role
+  role: role
   content: string,
 }
 
 export type Chat = chatDetails & {
-      messages: message[],
-      createdAt: string
+  messages: message[],
+  createdAt: string
 };
 
 
 export type details = Record<string, {
-  title : string,
-  updatedAt : string,
-  createdAt : string
+  title: string,
+  updatedAt: string,
+  createdAt: string
 }>
 
 export type chatMessageList = Record<string, message[]>;
@@ -54,3 +54,18 @@ export type RichMessage = {
   type: "rich_message";
   content: RichContentBlock[];
 };
+
+export enum request_type {
+  new_chat,
+  question
+}
+
+export type request = { request_type: request_type.new_chat, question : string } | { request_type : request_type.question, question : string , chatid : string}
+
+export enum response_type {
+  chat_id,
+  content,
+  chat_title
+}
+
+export type response = { response_type: response_type.chat_id, chat_id: string } | { response_type: response_type.chat_title, chat_title: string } | { response_type: response_type.content, content: string }
