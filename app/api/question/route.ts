@@ -22,6 +22,7 @@ export async function POST(req: Request) {
         chat_id = que_obj.chatid;
         let messagess = await ChatModel.find({ _id: que_obj.chatid }).select("messages").lean();
         let messages = messagess[0].messages;
+        console.log("msg", messages);
         messages.reverse();
         // console.log("m", messages[0])
         if (messages.length > 0) {
@@ -40,8 +41,16 @@ export async function POST(req: Request) {
     }
     const stream = new ReadableStream({
         async start(controller) {
+            const safeEnqueue = (chunk: string) => {
+                try {
+                    controller.enqueue(new TextEncoder().encode(chunk + "\n"));
+                } catch (e) {
+                    console.warn("Controller already closed, skipping enqueue");
+                }
+            };
+
             if (que_obj.request_type == request_type.new_chat) {
-                controller.enqueue(new TextEncoder().encode(JSON.stringify({ response_type: response_type.chat_id, chat_id: chat_id } as response)))
+                safeEnqueue(JSON.stringify({ response_type: response_type.chat_id, chat_id: chat_id } as response))
             }
             // console.log(history);
             const ask_question = new Promise<void>(async (resolve, reject) => {
@@ -71,7 +80,7 @@ Do not include any explanatory text outside of Markdown. The output must be read
                         const textChunk = chunk.text;
                         response = response + chunk.text;
                         // console.log(textChunk);
-                        controller.enqueue(new TextEncoder().encode(JSON.stringify({ response_type: response_type.content, content: textChunk } as response) + '\n'));
+                        safeEnqueue(JSON.stringify({ response_type: response_type.content, content: textChunk } as response))
                     }
                 } catch (err) {
                     console.error("Stream error:", err);
@@ -79,7 +88,9 @@ Do not include any explanatory text outside of Markdown. The output must be read
                 resolve();
             })
 
-            const generate_title = new Promise<void>(async (resolve, reject) => {
+
+            if (que_obj.request_type == request_type.new_chat) {
+                            const generate_title = new Promise<void>(async (resolve, reject) => {
                 const response = await ai.models.generateContent({
                     model: "gemini-2.5-flash",
                     contents: `Generate a concise chat title (4 to 5 words only) that summarizes the following question:
@@ -96,23 +107,25 @@ Rules:
                 title = response.candidates?.[0]?.content?.parts?.[0]?.text;
                 if (title) {
                     console.log(title);
-                    controller.enqueue(new TextEncoder().encode(JSON.stringify({ response_type: response_type.chat_title, chat_title: title } as response) + '\n'));
+                    safeEnqueue(JSON.stringify({ response_type: response_type.chat_title, chat_title: title } as response) + '\n')
                 }
                 resolve();
             })
-            if(que_obj.request_type == request_type.new_chat) {
+                console.log("new Chat")
                 await Promise.all([generate_title, ask_question]);
             }
             else await ask_question
             try {
-                if(request_type.new_chat == que_obj.request_type){let ch = new ChatModel({
-                    _id: chat_id,
-                    user: session?.user.id || "",
-                    updatedAt: Date.now(),
-                    title: title,
-                    messages: [{ content: que_obj.question, role: role.user }, { content: response, role: role.bot }]                  
-                })
-                await ch.save();}
+                if (request_type.new_chat == que_obj.request_type) {
+                    let ch = new ChatModel({
+                        _id: chat_id,
+                        user: session?.user.id || "",
+                        updatedAt: Date.now(),
+                        title: title,
+                        messages: [{ content: que_obj.question, role: role.user }, { content: response, role: role.bot }]
+                    })
+                    await ch.save();
+                }
                 else {
                     await ChatModel.updateOne({ _id: chat_id }, { "$push": { messages: [{ content: que_obj.question, role: role.user }, { content: response, role: role.bot }] }, updatedAt: (new Date).toISOString() }, { upsert: true })
                 }
