@@ -106,7 +106,7 @@ Rules:
                 title = response.candidates?.[0]?.content?.parts?.[0]?.text;
                 if (title) {
                     console.log(title);
-                    safeEnqueue(JSON.stringify({ response_type: response_type.chat_title, chat_title: title } as response) + '\n')
+                    safeEnqueue(JSON.stringify({ response_type: response_type.chat_title, chat_title: title } as response))
                 }
                 resolve();
             })
